@@ -4,9 +4,7 @@ import PyPDF2
 import io
 from docx import Document
 from memory import get_recent_conversations
-from audiorecorder import audiorecorder
-import tempfile
-import speech_recognition as sr
+import tempfile 
 
 st.set_page_config(
     page_title="Personal AI Assistant",
@@ -178,22 +176,64 @@ st.divider()
 
 # ── Voice Input ───────────────────────────────────────────────
 st.subheader("🎙️ Voice Input (Optional)")
-audio = audiorecorder("🎙️ Click to record", "⏹️ Recording... click to stop")
 
 voice_prompt = ""
-if len(audio) > 0:
-    with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as f:
-        audio.export(f.name, format="wav")
-        recognizer = sr.Recognizer()
-        with sr.AudioFile(f.name) as source:
-            audio_data = recognizer.record(source)
-            try:
-                voice_prompt = recognizer.recognize_google(audio_data)
-                st.success(f"✓ Heard: {voice_prompt}")
-            except sr.UnknownValueError:
-                st.warning("Couldn't understand the audio, please try again")
-            except sr.RequestError:
-                st.error("Speech recognition service unavailable")
+voice_input = st.components.v1.html("""
+<script>
+let recognition;
+let isRecording = false;
+
+function toggleRecording() {
+    if (!isRecording) {
+        recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = 'en-US';
+        recognition.interimResults = false;
+
+        recognition.onresult = function(event) {
+            const transcript = event.results[0][0].transcript;
+            const data = {type: 'voice_input', text: transcript};
+            window.parent.postMessage(data, '*');
+            document.getElementById('status').innerText = '✓ Heard: ' + transcript;
+            document.getElementById('btn').innerText = '🎙️ Click to record';
+            isRecording = false;
+        };
+
+        recognition.onerror = function(event) {
+            document.getElementById('status').innerText = '❌ Error: ' + event.error;
+            document.getElementById('btn').innerText = '🎙️ Click to record';
+            isRecording = false;
+        };
+
+        recognition.onend = function() {
+            if (isRecording) {
+                document.getElementById('btn').innerText = '🎙️ Click to record';
+                isRecording = false;
+            }
+        };
+
+        recognition.start();
+        isRecording = true;
+        document.getElementById('btn').innerText = '⏹️ Recording... click to stop';
+        document.getElementById('status').innerText = 'Listening...';
+    } else {
+        recognition.stop();
+        isRecording = false;
+        document.getElementById('btn').innerText = '🎙️ Click to record';
+    }
+}
+</script>
+<button id="btn" onclick="toggleRecording()" style="
+    background: #7c3aed;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0.5rem 1.25rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+    font-family: sans-serif;
+">🎙️ Click to record</button>
+<p id="status" style="color: #c4b5fd; font-size: 0.85rem; margin-top: 0.5rem; font-family: sans-serif;"></p>
+""", height=80)
 
 st.divider()
 
