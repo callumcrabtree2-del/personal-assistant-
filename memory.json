@@ -19,6 +19,56 @@
       "role": "assistant",
       "content": "Hi Callum! Your name is Callum, as you mentioned when you introduced yourself earlier. You told me you're building an AI business, which sounds really exciting!\n\nThe search results that came up are about various songs titled \"What's My Name\" (including ones by Disney and Rihanna), but those aren't relevant to your question since I already know your name from our previous conversation.\n\nHow's your AI business venture going?",
       "timestamp": "2026-03-15T12:31:16.449850"
+    },
+    {
+      "role": "user",
+      "content": "hey what's the weather going to be like tomorrow",
+      "timestamp": "2026-03-15T16:35:09.413183"
+    },
+    {
+      "role": "assistant",
+      "content": "Hi Callum! Based on the search results, I can see you're currently in the Harbour Island, Bahamas area. \n\nFor tomorrow (Monday, March 16th, 2026), the weather outlook indicates:\n- **Cloudy and cool conditions** are expected over the northeastern parts of the country\n- There may be some **heavy rain** in certain areas\n\nCurrently it's clear and pleasant at 77\u00b0F (25\u00b0C), but it looks like tomorrow will bring a change with cloudier, cooler weather and potential rain.\n\nI'd recommend checking a more detailed local forecast for your specific area in the Bahamas to get precise timing and rainfall amounts for tomorrow. Stay prepared and maybe have an umbrella handy!",
+      "timestamp": "2026-03-15T16:35:09.414663"
+    },
+    {
+      "role": "user",
+      "content": "hey what's the weather going to be like tomorrow",
+      "timestamp": "2026-03-15T16:35:57.299812"
+    },
+    {
+      "role": "assistant",
+      "content": "Hi Callum! Based on the search results, I can see you're currently in Harbour Island, Bahamas where it's currently clear and 77\u00b0F (25\u00b0C).\n\nHowever, I notice the search results don't include a specific forecast for tomorrow in the Bahamas - they mainly show current conditions and some general information about weather in other locations like California.\n\nFrom what I can see, you're currently experiencing:\n- Clear skies\n- Temperature: 77\u00b0F (25\u00b0C)\n- Wind: ESE at 17 mph with gusts up to 23 mph\n- Humidity: 82%\n\nFor tomorrow's specific forecast in Harbour Island, Bahamas, I'd recommend checking a local weather service or app for the most accurate and detailed prediction, as the search results don't provide that specific information for your location.",
+      "timestamp": "2026-03-15T16:35:57.302673"
+    },
+    {
+      "role": "user",
+      "content": "hey what's the weather going to be like tomorrow",
+      "timestamp": "2026-03-15T16:36:43.059756"
+    },
+    {
+      "role": "assistant",
+      "content": "Hi Callum! Based on the search results, I can see you're currently in Harbour Island, Bahamas where it's currently clear and 77\u00b0F (25\u00b0C).\n\nUnfortunately, the search results don't include a specific forecast for tomorrow (March 16th) in the Bahamas. The weather data I have shows current conditions but not tomorrow's forecast for your location. The other forecasts in the results are for Texas, which wouldn't be relevant to your location.\n\nCurrently you're experiencing:\n- Clear skies\n- Temperature: 77\u00b0F (25\u00b0C) \n- Wind: ESE at 17 mph\n- Humidity: 82%\n- Low cloud cover (22%)\n\nFor tomorrow's specific weather forecast in Harbour Island, Bahamas, I'd recommend checking a local weather app or service to get the most accurate prediction for your area!",
+      "timestamp": "2026-03-15T16:36:43.061785"
+    },
+    {
+      "role": "user",
+      "content": "hi what's the weather going to be like tomorrow",
+      "timestamp": "2026-03-15T16:39:09.341950"
+    },
+    {
+      "role": "assistant",
+      "content": "Hi Callum! Based on the search results, I can see you're currently in Harbour Island, Bahamas where it's currently clear and 77\u00b0F (25\u00b0C).\n\nUnfortunately, the search results don't include a specific forecast for tomorrow in your current location (Harbour Island, Bahamas). The weather data I have shows other locations like New York City and Charleston for March 16th, but not the Bahamas forecast.\n\nTo get tomorrow's weather forecast for Harbour Island, you might want to check a local weather app or website that can provide the specific forecast for your area. Would you like me to help you with anything else?",
+      "timestamp": "2026-03-15T16:39:09.344140"
+    },
+    {
+      "role": "user",
+      "content": "i live in melbourne what can you tell me about the weather tomorrow ",
+      "timestamp": "2026-03-15T16:39:46.942727"
+    },
+    {
+      "role": "assistant",
+      "content": "Hi Callum! I can see you're asking about Melbourne weather now. Based on the search results, here's what I can tell you about tomorrow's weather in Melbourne, Australia:\n\n**Tomorrow (March 16th, 2026) in Melbourne:**\n- **Morning**: Mix of sun and cloud, starting around 15\u00b0C (59\u00b0F)\n- **Early morning**: Some showers expected around 5:00 AM at 14\u00b0C (57\u00b0F) \n- **Evening**: Overcast conditions, cooling down to around 15-16\u00b0C (59-61\u00b0F)\n\nCurrently in Melbourne it's partly cloudy at 18\u00b0C (65\u00b0F) with light winds from the SSE.\n\nFor March in general, Melbourne typically enjoys moderate daytime temperatures up to 24\u00b0C (75\u00b0F) and cooler nights around 14\u00b0C (57\u00b0F) - great weather for outdoor activities!\n\nIt looks like tomorrow will have a mix of conditions, so you might want to have a light jacket handy and maybe an umbrella for those early morning showers. Hope that helps with your planning!",
+      "timestamp": "2026-03-15T16:39:46.944335"
     }
   ],
   "user_facts": {}

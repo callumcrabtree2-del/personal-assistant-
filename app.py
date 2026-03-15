@@ -4,6 +4,9 @@ import PyPDF2
 import io
 from docx import Document
 from memory import get_recent_conversations
+from audiorecorder import audiorecorder
+import tempfile
+import speech_recognition as sr
 
 st.set_page_config(
     page_title="Personal AI Assistant",
@@ -173,6 +176,27 @@ if uploaded_file is not None:
 
 st.divider()
 
+# ── Voice Input ───────────────────────────────────────────────
+st.subheader("🎙️ Voice Input (Optional)")
+audio = audiorecorder("🎙️ Click to record", "⏹️ Recording... click to stop")
+
+voice_prompt = ""
+if len(audio) > 0:
+    with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as f:
+        audio.export(f.name, format="wav")
+        recognizer = sr.Recognizer()
+        with sr.AudioFile(f.name) as source:
+            audio_data = recognizer.record(source)
+            try:
+                voice_prompt = recognizer.recognize_google(audio_data)
+                st.success(f"✓ Heard: {voice_prompt}")
+            except sr.UnknownValueError:
+                st.warning("Couldn't understand the audio, please try again")
+            except sr.RequestError:
+                st.error("Speech recognition service unavailable")
+
+st.divider()
+
 # ── Chat ──────────────────────────────────────────────────────
 if "messages" not in st.session_state:
     st.session_state.messages = []
@@ -181,8 +205,20 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-if prompt := st.chat_input("Ask me anything..."):
+# Track if voice prompt has already been used
+if "last_voice_prompt" not in st.session_state:
+    st.session_state.last_voice_prompt = ""
 
+text_input = st.chat_input("Ask me anything...")
+
+# Only use voice prompt if it's new and different from last used
+if voice_prompt and voice_prompt != st.session_state.last_voice_prompt:
+    prompt = voice_prompt
+    st.session_state.last_voice_prompt = voice_prompt
+else:
+    prompt = text_input
+
+if prompt:
     with st.chat_message("user"):
         st.markdown(prompt)
 

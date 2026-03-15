@@ -8,3 +8,4 @@ tavily-python
 python-dotenv
 PyPDF2
 python-docx
+streamlit-audiorecorder
