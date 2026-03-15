@@ -1,0 +1,25 @@
+{
+  "conversations": [
+    {
+      "role": "user",
+      "content": "Hi my name is Callum and i'm building an Ai business ",
+      "timestamp": "2026-03-15T12:30:00.703778"
+    },
+    {
+      "role": "assistant",
+      "content": "Hi Callum! Nice to meet you! \n\nI can see from the search results that you're interested in building an AI business - that's an exciting field to be in right now! It looks like there are resources available about turning yourself into a business using AI and getting started in the AI space.\n\nWhat specific aspect of your AI business are you working on or looking for help with? Are you focusing on a particular industry or type of AI solution? I'd be happy to help brainstorm ideas or discuss your plans further!\n\nThe AI business landscape is really dynamic right now with lots of opportunities, so I'm curious to hear more about your vision and what you're building.",
+      "timestamp": "2026-03-15T12:30:00.707054"
+    },
+    {
+      "role": "user",
+      "content": "whats my name?",
+      "timestamp": "2026-03-15T12:31:16.448307"
+    },
+    {
+      "role": "assistant",
+      "content": "Hi Callum! Your name is Callum, as you mentioned when you introduced yourself earlier. You told me you're building an AI business, which sounds really exciting!\n\nThe search results that came up are about various songs titled \"What's My Name\" (including ones by Disney and Rihanna), but those aren't relevant to your question since I already know your name from our previous conversation.\n\nHow's your AI business venture going?",
+      "timestamp": "2026-03-15T12:31:16.449850"
+    }
+  ],
+  "user_facts": {}
+}
