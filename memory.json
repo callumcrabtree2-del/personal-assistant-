@@ -69,6 +69,16 @@
       "role": "assistant",
       "content": "Hi Callum! I can see you're asking about Melbourne weather now. Based on the search results, here's what I can tell you about tomorrow's weather in Melbourne, Australia:\n\n**Tomorrow (March 16th, 2026) in Melbourne:**\n- **Morning**: Mix of sun and cloud, starting around 15\u00b0C (59\u00b0F)\n- **Early morning**: Some showers expected around 5:00 AM at 14\u00b0C (57\u00b0F) \n- **Evening**: Overcast conditions, cooling down to around 15-16\u00b0C (59-61\u00b0F)\n\nCurrently in Melbourne it's partly cloudy at 18\u00b0C (65\u00b0F) with light winds from the SSE.\n\nFor March in general, Melbourne typically enjoys moderate daytime temperatures up to 24\u00b0C (75\u00b0F) and cooler nights around 14\u00b0C (57\u00b0F) - great weather for outdoor activities!\n\nIt looks like tomorrow will have a mix of conditions, so you might want to have a light jacket handy and maybe an umbrella for those early morning showers. Hope that helps with your planning!",
       "timestamp": "2026-03-15T16:39:46.944335"
+    },
+    {
+      "role": "user",
+      "content": "what's the weather like in Melbourne",
+      "timestamp": "2026-03-18T10:09:44.313312"
+    },
+    {
+      "role": "assistant",
+      "content": "Hi Callum! Here's the current weather in Melbourne:\n\n**Current Conditions (March 18th, 10:10 AM):**\n- **Temperature:** 15.2\u00b0C (59.4\u00b0F)\n- **Conditions:** Overcast with 100% cloud cover\n- **Feels like:** 15.2\u00b0C\n- **Humidity:** 88%\n- **Wind:** Light winds at 4.7 km/h from the SSE\n- **Pressure:** 1022 mb\n- **Visibility:** 10 km\n- **UV Index:** 2.6 (low)\n\nIt's quite a cool, overcast day in Melbourne with high humidity but no precipitation currently. Perfect weather for staying cozy indoors while working on your AI business! \n\nThe search results also show that yesterday (March 17th) had rain and clouds with temperatures between 16-18\u00b0C, so it looks like Melbourne is having typical autumn weather right now.",
+      "timestamp": "2026-03-18T10:09:44.317007"
     }
   ],
   "user_facts": {}

@@ -4,7 +4,6 @@ import PyPDF2
 import io
 from docx import Document
 from memory import get_recent_conversations
-import tempfile 
 
 st.set_page_config(
     page_title="Personal AI Assistant",
@@ -176,9 +175,15 @@ st.divider()
 
 # ── Voice Input ───────────────────────────────────────────────
 st.subheader("🎙️ Voice Input (Optional)")
+st.caption("Click record and speak — it will send automatically")
 
-voice_prompt = ""
-voice_input = st.components.v1.html("""
+# Session state for voice
+if "voice_transcript" not in st.session_state:
+    st.session_state.voice_transcript = ""
+if "voice_pending" not in st.session_state:
+    st.session_state.voice_pending = False
+
+st.components.v1.html("""
 <script>
 let recognition;
 let isRecording = false;
@@ -191,11 +196,28 @@ function toggleRecording() {
 
         recognition.onresult = function(event) {
             const transcript = event.results[0][0].transcript;
-            const data = {type: 'voice_input', text: transcript};
-            window.parent.postMessage(data, '*');
-            document.getElementById('status').innerText = '✓ Heard: ' + transcript;
             document.getElementById('btn').innerText = '🎙️ Click to record';
+            document.getElementById('status').innerText = '✓ Heard: ' + transcript;
             isRecording = false;
+
+            // Find the chat input and fill it, then submit
+            setTimeout(function() {
+                const chatInput = window.parent.document.querySelector('textarea[data-testid="stChatInputTextArea"]');
+                if (chatInput) {
+                    const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.parent.HTMLTextAreaElement.prototype, 'value').set;
+                    nativeInputValueSetter.call(chatInput, transcript);
+                    chatInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    setTimeout(function() {
+                        chatInput.dispatchEvent(new KeyboardEvent('keydown', {
+                            key: 'Enter',
+                            code: 'Enter',
+                            keyCode: 13,
+                            which: 13,
+                            bubbles: true
+                        }));
+                    }, 100);
+                }
+            }, 300);
         };
 
         recognition.onerror = function(event) {
@@ -205,10 +227,8 @@ function toggleRecording() {
         };
 
         recognition.onend = function() {
-            if (isRecording) {
-                document.getElementById('btn').innerText = '🎙️ Click to record';
-                isRecording = false;
-            }
+            isRecording = false;
+            document.getElementById('btn').innerText = '🎙️ Click to record';
         };
 
         recognition.start();
@@ -217,8 +237,6 @@ function toggleRecording() {
         document.getElementById('status').innerText = 'Listening...';
     } else {
         recognition.stop();
-        isRecording = false;
-        document.getElementById('btn').innerText = '🎙️ Click to record';
     }
 }
 </script>
@@ -232,7 +250,7 @@ function toggleRecording() {
     cursor: pointer;
     font-family: sans-serif;
 ">🎙️ Click to record</button>
-<p id="status" style="color: #c4b5fd; font-size: 0.85rem; margin-top: 0.5rem; font-family: sans-serif;"></p>
+<p id="status" style="color: #c4b5fd; font-size: 0.8rem; margin-top: 0.5rem; font-family: sans-serif;"></p>
 """, height=80)
 
 st.divider()
@@ -245,18 +263,7 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-# Track if voice prompt has already been used
-if "last_voice_prompt" not in st.session_state:
-    st.session_state.last_voice_prompt = ""
-
-text_input = st.chat_input("Ask me anything...")
-
-# Only use voice prompt if it's new and different from last used
-if voice_prompt and voice_prompt != st.session_state.last_voice_prompt:
-    prompt = voice_prompt
-    st.session_state.last_voice_prompt = voice_prompt
-else:
-    prompt = text_input
+prompt = st.chat_input("Ask me anything...")
 
 if prompt:
     with st.chat_message("user"):
