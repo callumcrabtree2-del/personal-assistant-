@@ -360,7 +360,16 @@ st.components.v1.html("""
 let recognition;
 let isRecording = false;
 
+const supported = ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window);
+
+if (!supported) {
+    document.getElementById('btn').style.display = 'none';
+    document.getElementById('status').innerText = '⚠️ Voice input is not available on iPhone/iPad. Please type your message using the chat box below.';
+    document.getElementById('status').style.color = '#ffb3b3';
+}
+
 function toggleRecording() {
+    if (!supported) return;
     if (!isRecording) {
         recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
         recognition.lang = 'en-US';
