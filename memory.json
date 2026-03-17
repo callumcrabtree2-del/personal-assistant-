@@ -79,6 +79,16 @@
       "role": "assistant",
       "content": "Hi Callum! Here's the current weather in Melbourne:\n\n**Current Conditions (March 18th, 10:10 AM):**\n- **Temperature:** 15.2\u00b0C (59.4\u00b0F)\n- **Conditions:** Overcast with 100% cloud cover\n- **Feels like:** 15.2\u00b0C\n- **Humidity:** 88%\n- **Wind:** Light winds at 4.7 km/h from the SSE\n- **Pressure:** 1022 mb\n- **Visibility:** 10 km\n- **UV Index:** 2.6 (low)\n\nIt's quite a cool, overcast day in Melbourne with high humidity but no precipitation currently. Perfect weather for staying cozy indoors while working on your AI business! \n\nThe search results also show that yesterday (March 17th) had rain and clouds with temperatures between 16-18\u00b0C, so it looks like Melbourne is having typical autumn weather right now.",
       "timestamp": "2026-03-18T10:09:44.317007"
+    },
+    {
+      "role": "user",
+      "content": "what's the financial markets looking like today",
+      "timestamp": "2026-03-18T10:29:07.760223"
+    },
+    {
+      "role": "assistant",
+      "content": "Hi Callum! Based on the search results, here's what's happening in the financial markets today:\n\n**Current Market Highlights:**\n- **Energy sector** is leading the markets today\n- **Financials** are also performing strongly\n- **Credit markets** are particularly active and driving gains in the financial sector\n\n**Notable Performers:**\n- Most financial names are trading higher today\n- **Blue Owl** and **Apollo** are both up around **+5%**, showing strong performance in the credit/alternative investment space\n\nThe search results indicate there's good momentum in both energy and financial sectors today, with credit markets providing significant support to financial stocks. It sounds like a fairly positive trading day overall for these key sectors!\n\nWould you like me to look up any specific stocks or sectors you're particularly interested in for your AI business investments?",
+      "timestamp": "2026-03-18T10:29:07.766996"
     }
   ],
   "user_facts": {}
