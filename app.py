@@ -4,6 +4,7 @@ import PyPDF2
 import io
 from docx import Document
 from memory import get_recent_conversations
+from fpdf import FPDF
 
 st.set_page_config(
     page_title="Ruby AI Assistant",
@@ -25,7 +26,6 @@ html, body, [class*="css"] {
     position: relative;
 }
 
-/* ── Stars layer 1 (small, fast twinkle) ── */
 [data-testid="stAppViewContainer"]::before {
     content: '';
     position: fixed;
@@ -76,7 +76,6 @@ html, body, [class*="css"] {
     z-index: 0;
 }
 
-/* ── Stars layer 2 (different timing) ── */
 [data-testid="stAppViewContainer"]::after {
     content: '';
     position: fixed;
@@ -137,7 +136,6 @@ html, body, [class*="css"] {
     100% { opacity: 0.3; }
 }
 
-/* ── Shooting stars ── */
 .shooting-star {
     position: fixed;
     width: 150px;
@@ -148,16 +146,16 @@ html, body, [class*="css"] {
     pointer-events: none;
     z-index: 0;
 }
-.s1 { top: 15%; left: -150px; animation-duration: 4s; animation-delay: 1s; transform: rotate(20deg); }
-.s2 { top: 30%; left: -150px; animation-duration: 5s; animation-delay: 4s; transform: rotate(15deg); }
-.s3 { top: 8%;  left: -150px; animation-duration: 6s; animation-delay: 7s; transform: rotate(25deg); }
-.s4 { top: 50%; left: -150px; animation-duration: 4.5s; animation-delay: 11s; transform: rotate(18deg); }
+.s1 { top: -10px; left: 10%; animation-duration: 4s; animation-delay: 1s; transform: rotate(35deg); }
+.s2 { top: -10px; left: 35%; animation-duration: 5s; animation-delay: 4s; transform: rotate(30deg); }
+.s3 { top: -10px; left: 60%; animation-duration: 6s; animation-delay: 7s; transform: rotate(38deg); }
+.s4 { top: -10px; left: 80%; animation-duration: 4.5s; animation-delay: 11s; transform: rotate(32deg); }
 
 @keyframes shoot {
-    0%   { left: -150px; opacity: 0; }
+    0%   { top: -10px; opacity: 0; }
     5%   { opacity: 1; }
     80%  { opacity: 0.8; }
-    100% { left: 110%; opacity: 0; }
+    100% { top: 110%; opacity: 0; }
 }
 
 #MainMenu, footer, header {visibility: hidden;}
@@ -170,11 +168,7 @@ html, body, [class*="css"] {
     z-index: 1;
 }
 
-.title-block {
-    text-align: center;
-    padding: 2rem 0 1.5rem 0;
-}
-
+.title-block { text-align: center; padding: 2rem 0 1.5rem 0; }
 .ruby-avatar { width: 80px; height: 80px; margin: 0 auto 1rem; }
 
 .ruby-gem {
@@ -184,7 +178,7 @@ html, body, [class*="css"] {
     clip-path: polygon(50% 0%, 100% 35%, 85% 100%, 15% 100%, 0% 35%);
     position: relative;
     animation: gemPulse 3s ease-in-out infinite;
-    box-shadow: 0 0 30px rgba(255, 23, 68, 0.5), 0 0 60px rgba(213, 0, 249, 0.3);
+    box-shadow: 0 0 30px rgba(255,23,68,0.5), 0 0 60px rgba(213,0,249,0.3);
 }
 .ruby-gem::after {
     content: '';
@@ -303,7 +297,6 @@ h3 {
 ::-webkit-scrollbar-thumb:hover { background: rgba(213,0,249,0.6); }
 </style>
 
-<!-- Shooting stars -->
 <div class="shooting-star s1"></div>
 <div class="shooting-star s2"></div>
 <div class="shooting-star s3"></div>
@@ -468,3 +461,36 @@ if prompt:
         "role": "assistant",
         "content": response
     })
+
+# ── Export Chat ───────────────────────────────────────────────
+if st.session_state.get("messages"):
+    st.divider()
+    st.subheader("💾 Export Conversation")
+    col1, col2 = st.columns(2)
+
+    with col1:
+        chat_text = ""
+        for msg in st.session_state.messages:
+            role = "You" if msg["role"] == "user" else "Ruby"
+            chat_text += f"{role}:\n{msg['content']}\n\n"
+        st.download_button(
+            label="📥 Export as TXT",
+            data=chat_text,
+            file_name="ruby_chat.txt",
+            mime="text/plain",
+            use_container_width=True
+        )
+
+    with col2:
+        # Export as markdown
+        chat_md = "# Ruby Chat Export\n\n"
+        for msg in st.session_state.messages:
+            role = "**You**" if msg["role"] == "user" else "**Ruby**"
+            chat_md += f"{role}:\n{msg['content']}\n\n---\n\n"
+        st.download_button(
+            label="📥 Export as Markdown",
+            data=chat_md,
+            file_name="ruby_chat.md",
+            mime="text/markdown",
+            use_container_width=True
+        )

@@ -9,3 +9,4 @@ python-dotenv
 PyPDF2
 python-docx
 SpeechRecognition
+fpdf2
