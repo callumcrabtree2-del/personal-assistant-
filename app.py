@@ -2,6 +2,7 @@ import streamlit as st
 from agent import chat
 import PyPDF2
 import io
+import base64
 from docx import Document
 from memory import get_recent_conversations
 
@@ -405,12 +406,15 @@ st.markdown(f"""
 # ── Document upload ───────────────────────────────────────────
 st.subheader("🛰️ Mission Control (Optional)")
 uploaded_file = st.file_uploader(
-    "Upload a PDF, TXT or Word document",
-    type=["pdf", "txt", "docx"],
+    "Upload a PDF, TXT, Word document, or image",
+    type=["pdf", "txt", "docx", "png", "jpg", "jpeg", "gif", "webp"],
     label_visibility="collapsed"
 )
 
 document_text = ""
+uploaded_image_data = None
+uploaded_image_media_type = None
+
 if uploaded_file is not None:
     if uploaded_file.type == "application/pdf":
         pdf_reader = PyPDF2.PdfReader(io.BytesIO(uploaded_file.read()))
@@ -425,6 +429,12 @@ if uploaded_file is not None:
         for paragraph in doc.paragraphs:
             document_text += paragraph.text + "\n"
         st.success("✓ Document received at mission control")
+    elif uploaded_file.type in ("image/png", "image/jpeg", "image/gif", "image/webp"):
+        image_bytes = uploaded_file.read()
+        uploaded_image_data = base64.b64encode(image_bytes).decode("utf-8")
+        uploaded_image_media_type = uploaded_file.type
+        st.image(io.BytesIO(image_bytes), caption="Image ready for analysis", width='stretch')
+        st.success("✓ Image loaded — ask Ruby anything about it")
 
 st.divider()
 
@@ -539,7 +549,11 @@ if prompt:
 
     with st.chat_message("assistant"):
         with st.spinner("Ruby is scanning the cosmos..."):
-            response = chat(full_prompt)
+            response = chat(
+                full_prompt,
+                image_data=uploaded_image_data,
+                image_media_type=uploaded_image_media_type
+            )
         st.markdown(response)
 
     st.session_state.messages.append({
@@ -563,7 +577,7 @@ if st.session_state.get("messages"):
             data=chat_text,
             file_name="ruby_transmission.txt",
             mime="text/plain",
-            use_container_width=True
+            width='stretch'
         )
 
     with col2:
@@ -576,5 +590,5 @@ if st.session_state.get("messages"):
             data=chat_md,
             file_name="ruby_transmission.md",
             mime="text/markdown",
-            use_container_width=True
+            width='stretch'
         )

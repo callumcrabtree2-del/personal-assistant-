@@ -14,14 +14,14 @@ llm = ChatAnthropic(
 # Store conversation history for current session
 chat_history = []
 
-def chat(user_message):
+def chat(user_message, image_data=None, image_media_type=None):
     # Load memory summary from past conversations
     memory_summary = get_memory_summary()
 
     # Build system message with memory included
     system_message = SystemMessage(content=f"""
 You are a helpful personal assistant with memory of past conversations.
-When you need current information or facts you don't know, 
+When you need current information or facts you don't know,
 use the search results provided to you.
 Always be friendly, clear and concise.
 
@@ -32,7 +32,7 @@ Always be friendly, clear and concise.
     search_results = search_web(user_message)
 
     # Combine user message with search results
-    enhanced_message = f"""
+    enhanced_text = f"""
 User question: {user_message}
 
 Here are some relevant search results to help answer:
@@ -41,8 +41,20 @@ Here are some relevant search results to help answer:
 Please answer the user's question using the search results where relevant.
 """
 
+    # Build message content — multimodal if image provided
+    if image_data and image_media_type:
+        message_content = [
+            {
+                "type": "image_url",
+                "image_url": {"url": f"data:{image_media_type};base64,{image_data}"}
+            },
+            {"type": "text", "text": enhanced_text}
+        ]
+    else:
+        message_content = enhanced_text
+
     # Add to current session history
-    chat_history.append(HumanMessage(content=enhanced_message))
+    chat_history.append(HumanMessage(content=message_content))
 
     # Get response from Claude
     response = llm.invoke([system_message] + chat_history)
