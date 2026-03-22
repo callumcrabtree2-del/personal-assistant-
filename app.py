@@ -3,6 +3,7 @@ from agent import chat
 import PyPDF2
 import io
 import base64
+import json
 from docx import Document
 from memory import get_recent_conversations
 
@@ -12,7 +13,11 @@ st.set_page_config(
     layout="centered"
 )
 
-st.markdown("""
+# ── Helpers ───────────────────────────────────────────────────
+
+@st.cache_data(show_spinner=False)
+def get_css() -> str:
+    return """
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Raleway:wght@300;400;500;600&display=swap');
 
@@ -379,6 +384,49 @@ section[data-testid="stBottom"] {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(213,0,249,0.3); border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(213,0,249,0.6); }
+
+/* ── Code Laboratory ── */
+.line-counter {
+    font-size: 0.68rem;
+    color: #7b6b8a;
+    text-align: right;
+    font-family: 'Orbitron', monospace;
+    letter-spacing: 0.08em;
+    margin-top: -0.4rem;
+    margin-bottom: 0.5rem;
+}
+
+.findings-panel {
+    background: rgba(120,40,140,0.08);
+    border: 1px solid rgba(213,0,249,0.35);
+    border-radius: 16px;
+    padding: 1.5rem 1.5rem 1rem 1.5rem;
+    backdrop-filter: blur(10px);
+    margin-top: 1rem;
+    box-shadow: 0 0 40px rgba(213,0,249,0.08), inset 0 1px 0 rgba(255,255,255,0.04);
+}
+
+.findings-header {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #e0b0ff;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(213,0,249,0.2);
+    text-shadow: 0 0 12px rgba(213,0,249,0.5);
+}
+
+.image-preview-wrap {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(213,0,249,0.2);
+    border-radius: 12px;
+    padding: 0.75rem;
+    margin-top: 0.75rem;
+    text-align: center;
+}
 </style>
 
 <div class="shooting-star s1"></div>
@@ -386,7 +434,59 @@ section[data-testid="stBottom"] {
 <div class="shooting-star s3"></div>
 <div class="shooting-star s4"></div>
 <div class="planet"></div>
-""", unsafe_allow_html=True)
+"""
+
+
+IMAGE_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "webp"}
+IMAGE_MIME = {
+    "png": "image/png",
+    "jpg": "image/jpeg",
+    "jpeg": "image/jpeg",
+    "gif": "image/gif",
+    "webp": "image/webp",
+}
+
+
+def extract_document_text(uploaded_file) -> str:
+    """Extract text from an uploaded PDF, TXT, or Word document."""
+    try:
+        if uploaded_file.type == "application/pdf":
+            pdf_reader = PyPDF2.PdfReader(io.BytesIO(uploaded_file.read()))
+            text = ""
+            for page in pdf_reader.pages:
+                text += page.extract_text()
+            st.success("✓ Document received at mission control")
+            return text
+        elif uploaded_file.type == "text/plain":
+            text = uploaded_file.read().decode("utf-8")
+            st.success("✓ Transmission received")
+            return text
+        elif uploaded_file.type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+            doc = Document(io.BytesIO(uploaded_file.read()))
+            text = ""
+            for paragraph in doc.paragraphs:
+                text += paragraph.text + "\n"
+            st.success("✓ Document received at mission control")
+            return text
+    except Exception as e:
+        st.error(f"❌ Failed to read document: {e}")
+    return ""
+
+
+def build_export_text(messages: list) -> tuple:
+    """Return (plain_text, markdown) export strings for the chat history."""
+    plain = ""
+    md = "# Ruby Transmission Log\n\n"
+    for msg in messages:
+        role_plain = "You" if msg["role"] == "user" else "Ruby"
+        role_md = "**You**" if msg["role"] == "user" else "**Ruby**"
+        plain += f"{role_plain}:\n{msg['content']}\n\n"
+        md += f"{role_md}:\n{msg['content']}\n\n---\n\n"
+    return plain, md
+
+
+# ── Styles ────────────────────────────────────────────────────
+st.markdown(get_css(), unsafe_allow_html=True)
 
 # ── Header ────────────────────────────────────────────────────
 recent = get_recent_conversations()
@@ -403,38 +503,30 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# ── Document upload ───────────────────────────────────────────
+# ── Document / Image upload ────────────────────────────────────
 st.subheader("🛰️ Mission Control (Optional)")
 uploaded_file = st.file_uploader(
-    "Upload a PDF, TXT, Word document, or image",
+    "Upload a PDF, TXT, Word document or image",
     type=["pdf", "txt", "docx", "png", "jpg", "jpeg", "gif", "webp"],
     label_visibility="collapsed"
 )
 
 document_text = ""
-uploaded_image_data = None
-uploaded_image_media_type = None
+image_data = None
+image_media_type = None
 
 if uploaded_file is not None:
-    if uploaded_file.type == "application/pdf":
-        pdf_reader = PyPDF2.PdfReader(io.BytesIO(uploaded_file.read()))
-        for page in pdf_reader.pages:
-            document_text += page.extract_text()
-        st.success("✓ Document received at mission control")
-    elif uploaded_file.type == "text/plain":
-        document_text = uploaded_file.read().decode("utf-8")
-        st.success("✓ Transmission received")
-    elif uploaded_file.type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-        doc = Document(io.BytesIO(uploaded_file.read()))
-        for paragraph in doc.paragraphs:
-            document_text += paragraph.text + "\n"
-        st.success("✓ Document received at mission control")
-    elif uploaded_file.type in ("image/png", "image/jpeg", "image/gif", "image/webp"):
-        image_bytes = uploaded_file.read()
-        uploaded_image_data = base64.b64encode(image_bytes).decode("utf-8")
-        uploaded_image_media_type = uploaded_file.type
-        st.image(io.BytesIO(image_bytes), caption="Image ready for analysis", width='stretch')
-        st.success("✓ Image loaded — ask Ruby anything about it")
+    file_ext = uploaded_file.name.rsplit(".", 1)[-1].lower()
+    if file_ext in IMAGE_EXTENSIONS:
+        file_bytes = uploaded_file.read()
+        image_data = base64.b64encode(file_bytes).decode("utf-8")
+        image_media_type = IMAGE_MIME.get(file_ext, "image/jpeg")
+        st.markdown('<div class="image-preview-wrap">', unsafe_allow_html=True)
+        st.image(io.BytesIO(file_bytes), caption=uploaded_file.name, use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+        st.success("✓ Image locked on target — ready for transmission")
+    else:
+        document_text = extract_document_text(uploaded_file)
 
 st.divider()
 
@@ -521,6 +613,122 @@ function toggleRecording() {
 
 st.divider()
 
+# ── Code Laboratory ───────────────────────────────────────────
+st.subheader("🔬 Code Laboratory")
+
+if "lab_key" not in st.session_state:
+    st.session_state.lab_key = 0
+if "lab_result" not in st.session_state:
+    st.session_state.lab_result = ""
+
+col_lang, col_action = st.columns(2)
+with col_lang:
+    lab_language = st.selectbox(
+        "Language",
+        ["Python", "JavaScript", "HTML", "CSS", "SQL", "Other"],
+        key="lab_language"
+    )
+with col_action:
+    lab_action = st.selectbox(
+        "Action",
+        ["Fix Bug", "Explain Code", "Write From Scratch", "Improve/Optimise"],
+        key="lab_action"
+    )
+
+lab_code = st.text_area(
+    "Paste your code here",
+    height=220,
+    placeholder="# Paste your code here...",
+    key=f"lab_code_{st.session_state.lab_key}",
+    label_visibility="collapsed"
+)
+
+line_count = len(lab_code.splitlines()) if lab_code.strip() else 0
+st.markdown(
+    f'<div class="line-counter">Lines: {line_count}</div>',
+    unsafe_allow_html=True
+)
+
+lab_instructions = st.text_input(
+    "Additional instructions (optional)",
+    placeholder="e.g. Focus on performance, add type hints, target Python 3.11...",
+    key="lab_instructions"
+)
+
+btn_col1, btn_col2 = st.columns([1, 2])
+with btn_col1:
+    if st.button("🗑️ Clear Code", use_container_width=True):
+        st.session_state.lab_key += 1
+        st.session_state.lab_result = ""
+        st.rerun()
+with btn_col2:
+    launch = st.button("🚀 Launch Analysis", use_container_width=True, type="primary")
+
+if launch:
+    if not lab_code.strip() and lab_action != "Write From Scratch":
+        st.warning("⚠️ Please paste some code before launching analysis.")
+    else:
+        action_intros = {
+            "Fix Bug": f"Fix the bug(s) in this {lab_language} code. Explain what was wrong and provide the corrected code.",
+            "Explain Code": f"Explain this {lab_language} code clearly, step by step, describing what each part does.",
+            "Write From Scratch": f"Write {lab_language} code from scratch for the following requirement.",
+            "Improve/Optimise": f"Improve and optimise this {lab_language} code for better performance, readability, and best practices. Show the improved version and explain the changes.",
+        }
+        intro = action_intros[lab_action]
+        code_block = f"\n\n```{lab_language.lower()}\n{lab_code}\n```" if lab_code.strip() else ""
+        extra = f"\n\nAdditional instructions: {lab_instructions}" if lab_instructions.strip() else ""
+        lab_prompt = f"{intro}{code_block}{extra}"
+
+        with st.spinner("Ruby is scanning the code cosmos..."):
+            try:
+                result = chat(lab_prompt)
+            except Exception as e:
+                result = f"❌ Analysis error: {e}"
+        st.session_state.lab_result = result
+
+if st.session_state.lab_result:
+    st.markdown('<div class="findings-panel">', unsafe_allow_html=True)
+    st.markdown('<div class="findings-header">🔬 Ruby\'s Findings</div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown(st.session_state.lab_result)
+
+    copy_col, dl_col = st.columns(2)
+    with copy_col:
+        escaped = json.dumps(st.session_state.lab_result)
+        st.components.v1.html(f"""
+<button onclick="navigator.clipboard.writeText({escaped}).then(function(){{
+    this.innerText='✓ Copied!';
+    setTimeout(()=>this.innerText='📋 Copy to Clipboard',2000);
+}}.bind(this))" style="
+    background: rgba(120,40,140,0.3);
+    color: #e0b0ff;
+    border: 1px solid rgba(213,0,249,0.4);
+    border-radius: 50px;
+    padding: 0.5rem 1.2rem;
+    font-size: 0.8rem;
+    cursor: pointer;
+    font-family: sans-serif;
+    letter-spacing: 0.05em;
+    width: 100%;
+    transition: background 0.2s;
+">📋 Copy to Clipboard</button>
+""", height=48)
+    with dl_col:
+        lang_ext = {
+            "Python": "py", "JavaScript": "js", "HTML": "html",
+            "CSS": "css", "SQL": "sql", "Other": "txt"
+        }
+        ext = lang_ext.get(lab_language, "txt")
+        st.download_button(
+            label="💾 Save Findings",
+            data=st.session_state.lab_result,
+            file_name=f"ruby_findings.{ext}",
+            mime="text/plain",
+            use_container_width=True
+        )
+
+st.divider()
+
 # ── Chat ──────────────────────────────────────────────────────
 if "messages" not in st.session_state:
     st.session_state.messages = []
@@ -549,11 +757,14 @@ if prompt:
 
     with st.chat_message("assistant"):
         with st.spinner("Ruby is scanning the cosmos..."):
-            response = chat(
-                full_prompt,
-                image_data=uploaded_image_data,
-                image_media_type=uploaded_image_media_type
-            )
+            try:
+                response = chat(
+                    full_prompt,
+                    image_data=image_data,
+                    image_media_type=image_media_type
+                )
+            except Exception as e:
+                response = f"❌ Transmission error: {e}"
         st.markdown(response)
 
     st.session_state.messages.append({
@@ -567,28 +778,22 @@ if st.session_state.get("messages"):
     st.subheader("🌌 Export Transmission Log")
     col1, col2 = st.columns(2)
 
+    chat_text, chat_md = build_export_text(st.session_state.messages)
+
     with col1:
-        chat_text = ""
-        for msg in st.session_state.messages:
-            role = "You" if msg["role"] == "user" else "Ruby"
-            chat_text += f"{role}:\n{msg['content']}\n\n"
         st.download_button(
             label="📥 Export as TXT",
             data=chat_text,
             file_name="ruby_transmission.txt",
             mime="text/plain",
-            width='stretch'
+            use_container_width=True
         )
 
     with col2:
-        chat_md = "# Ruby Transmission Log\n\n"
-        for msg in st.session_state.messages:
-            role = "**You**" if msg["role"] == "user" else "**Ruby**"
-            chat_md += f"{role}:\n{msg['content']}\n\n---\n\n"
         st.download_button(
             label="📥 Export as Markdown",
             data=chat_md,
             file_name="ruby_transmission.md",
             mime="text/markdown",
-            width='stretch'
+            use_container_width=True
         )
