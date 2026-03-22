@@ -4,7 +4,6 @@ import PyPDF2
 import io
 from docx import Document
 from memory import get_recent_conversations
-from fpdf import FPDF
 
 st.set_page_config(
     page_title="Ruby AI Assistant",
@@ -14,7 +13,7 @@ st.set_page_config(
 
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Raleway:wght@300;400;500;600&display=swap');
 
 html, body, [class*="css"] {
     font-family: 'Raleway', sans-serif;
@@ -26,11 +25,15 @@ html, body, [class*="css"] {
     position: relative;
 }
 
+/* ── Nebula glow layers ── */
 [data-testid="stAppViewContainer"]::before {
     content: '';
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
     background-image:
+        radial-gradient(ellipse 60% 40% at 15% 50%, rgba(138, 43, 226, 0.12) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 60% at 85% 30%, rgba(255, 20, 147, 0.08) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 30% at 50% 80%, rgba(75, 0, 130, 0.1) 0%, transparent 70%),
         radial-gradient(1px 1px at 5% 8%, white 0%, transparent 100%),
         radial-gradient(1px 1px at 12% 22%, white 0%, transparent 100%),
         radial-gradient(1.5px 1.5px at 18% 45%, white 0%, transparent 100%),
@@ -81,6 +84,8 @@ html, body, [class*="css"] {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
     background-image:
+        radial-gradient(ellipse 70% 50% at 70% 60%, rgba(186, 85, 211, 0.07) 0%, transparent 60%),
+        radial-gradient(ellipse 30% 40% at 30% 20%, rgba(255, 105, 180, 0.06) 0%, transparent 60%),
         radial-gradient(1px 1px at 7% 18%, white 0%, transparent 100%),
         radial-gradient(1px 1px at 14% 38%, white 0%, transparent 100%),
         radial-gradient(1.5px 1.5px at 21% 58%, rgba(224,176,255,1) 0%, transparent 100%),
@@ -136,26 +141,73 @@ html, body, [class*="css"] {
     100% { opacity: 0.3; }
 }
 
+/* ── Shooting stars ── */
 .shooting-star {
     position: fixed;
-    width: 150px;
+    width: 180px;
     height: 2px;
-    background: linear-gradient(90deg, white, rgba(213,0,249,0.5), transparent);
     border-radius: 50px;
+    background: linear-gradient(90deg, transparent, rgba(213,0,249,0.6), white);
     animation: shoot linear infinite;
     pointer-events: none;
     z-index: 0;
 }
-.s1 { top: -10px; left: 10%; animation-duration: 4s; animation-delay: 1s; transform: rotate(35deg); }
-.s2 { top: -10px; left: 35%; animation-duration: 5s; animation-delay: 4s; transform: rotate(30deg); }
-.s3 { top: -10px; left: 60%; animation-duration: 6s; animation-delay: 7s; transform: rotate(38deg); }
-.s4 { top: -10px; left: 80%; animation-duration: 4.5s; animation-delay: 11s; transform: rotate(32deg); }
+.s1 { top: 12%; left: -180px; animation-duration: 4s; animation-delay: 1s; }
+.s2 { top: 28%; left: -180px; animation-duration: 5s; animation-delay: 4s; }
+.s3 { top: 7%;  left: -180px; animation-duration: 6s; animation-delay: 7s; }
+.s4 { top: 48%; left: -180px; animation-duration: 4.5s; animation-delay: 11s; }
 
 @keyframes shoot {
-    0%   { top: -10px; opacity: 0; }
+    0%   { left: -180px; opacity: 0; }
     5%   { opacity: 1; }
-    80%  { opacity: 0.8; }
-    100% { top: 110%; opacity: 0; }
+    85%  { opacity: 0.8; }
+    100% { left: 110%; opacity: 0; }
+}
+
+/* ── Planet ── */
+.planet {
+    position: fixed;
+    bottom: 35%;
+    right: 3%;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #6b21a8, #1e0533 60%, #0a0118);
+    box-shadow:
+        0 0 40px rgba(139, 92, 246, 0.3),
+        0 0 80px rgba(139, 92, 246, 0.15),
+        inset -20px -10px 40px rgba(0,0,0,0.6);
+    pointer-events: none;
+    z-index: 0;
+    animation: planetFloat 8s ease-in-out infinite;
+}
+.planet::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: -20%;
+    width: 140%;
+    height: 30%;
+    border-radius: 50%;
+    border: 2px solid rgba(139, 92, 246, 0.3);
+    transform: translateY(-50%) rotateX(75deg);
+    box-shadow: 0 0 10px rgba(139, 92, 246, 0.2);
+}
+.planet::after {
+    content: '';
+    position: absolute;
+    top: 15%;
+    left: 20%;
+    width: 25%;
+    height: 15%;
+    background: rgba(255,255,255,0.06);
+    border-radius: 50%;
+    filter: blur(4px);
+}
+
+@keyframes planetFloat {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-12px); }
 }
 
 #MainMenu, footer, header {visibility: hidden;}
@@ -168,7 +220,11 @@ html, body, [class*="css"] {
     z-index: 1;
 }
 
-.title-block { text-align: center; padding: 2rem 0 1.5rem 0; }
+/* ── Title ── */
+.title-block {
+    text-align: center;
+    padding: 2rem 0 1.5rem 0;
+}
 .ruby-avatar { width: 80px; height: 80px; margin: 0 auto 1rem; }
 
 .ruby-gem {
@@ -177,8 +233,7 @@ html, body, [class*="css"] {
     background: linear-gradient(135deg, #ff1744 0%, #d500f9 40%, #ff4081 70%, #ff6d00 100%);
     clip-path: polygon(50% 0%, 100% 35%, 85% 100%, 15% 100%, 0% 35%);
     position: relative;
-    animation: gemPulse 3s ease-in-out infinite;
-    box-shadow: 0 0 30px rgba(255,23,68,0.5), 0 0 60px rgba(213,0,249,0.3);
+    animation: gemPulse 2.5s ease-in-out infinite;
 }
 .ruby-gem::after {
     content: '';
@@ -191,23 +246,30 @@ html, body, [class*="css"] {
 }
 
 @keyframes gemPulse {
-    0%, 100% { box-shadow: 0 0 30px rgba(255,23,68,0.5), 0 0 60px rgba(213,0,249,0.3); }
-    50% { box-shadow: 0 0 50px rgba(255,23,68,0.8), 0 0 100px rgba(213,0,249,0.5); }
+    0%, 100% {
+        box-shadow: 0 0 20px rgba(255,23,68,0.6), 0 0 40px rgba(213,0,249,0.4), 0 0 80px rgba(213,0,249,0.2);
+        filter: brightness(1);
+    }
+    50% {
+        box-shadow: 0 0 40px rgba(255,23,68,1), 0 0 80px rgba(213,0,249,0.8), 0 0 120px rgba(213,0,249,0.4), 0 0 160px rgba(255,23,68,0.2);
+        filter: brightness(1.2);
+    }
 }
 
 .title-block h1 {
-    font-size: 2.2rem;
-    font-weight: 700;
-    letter-spacing: -0.02em;
+    font-family: 'Orbitron', monospace;
+    font-size: 2.4rem;
+    font-weight: 900;
+    letter-spacing: 0.1em;
     color: #ffffff;
     margin-bottom: 0.25rem;
-    text-shadow: 0 0 20px rgba(213,0,249,0.4);
+    text-shadow: 0 0 20px rgba(213,0,249,0.6), 0 0 40px rgba(213,0,249,0.3);
 }
 .title-block p {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     color: #7b6b8a;
     font-weight: 400;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.2em;
     text-transform: uppercase;
 }
 .memory-badge {
@@ -216,10 +278,22 @@ html, body, [class*="css"] {
     border: 1px solid rgba(213,0,249,0.3);
     border-radius: 20px;
     padding: 0.25rem 0.75rem;
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     color: #e0b0ff;
     margin-top: 0.5rem;
     backdrop-filter: blur(10px);
+    letter-spacing: 0.05em;
+    font-family: 'Orbitron', monospace;
+}
+
+/* ── Section headers ── */
+h3 {
+    font-size: 0.65rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.2em !important;
+    text-transform: uppercase !important;
+    color: #7b6b8a !important;
+    font-family: 'Orbitron', monospace !important;
 }
 
 [data-testid="stFileUploader"] {
@@ -267,12 +341,13 @@ hr {
 }
 
 [data-testid="stChatInput"] {
-    background: rgba(255,255,255,0.04) !important;
+    background: transparent !important;
     border: 1px solid rgba(255,255,255,0.1) !important;
     border-radius: 50px !important;
     color: #e8e8f0 !important;
     font-family: 'Raleway', sans-serif !important;
-    backdrop-filter: blur(20px) !important;
+    backdrop-filter: none !important;
+    box-shadow: none !important;
 }
 [data-testid="stChatInput"]:focus-within {
     border-color: rgba(213,0,249,0.5) !important;
@@ -282,13 +357,21 @@ hr {
     background: linear-gradient(135deg, #ff1744, #d500f9) !important;
     border-radius: 50% !important;
 }
+[data-testid="stBottom"] {
+    background: transparent !important;
+    backdrop-filter: none !important;
+}
+[data-testid="stBottom"] > div {
+    background: transparent !important;
+}
+[data-testid="stBottom"] > div > div {
+    background: transparent !important;
+}
 
-h3 {
-    font-size: 0.7rem !important;
-    font-weight: 600 !important;
-    letter-spacing: 0.12em !important;
-    text-transform: uppercase !important;
-    color: #7b6b8a !important;
+section[data-testid="stBottom"] {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
 }
 
 ::-webkit-scrollbar { width: 4px; }
@@ -301,6 +384,7 @@ h3 {
 <div class="shooting-star s2"></div>
 <div class="shooting-star s3"></div>
 <div class="shooting-star s4"></div>
+<div class="planet"></div>
 """, unsafe_allow_html=True)
 
 # ── Header ────────────────────────────────────────────────────
@@ -312,14 +396,14 @@ st.markdown(f"""
     <div class="ruby-avatar">
         <div class="ruby-gem"></div>
     </div>
-    <h1>Ruby</h1>
-    <p>Your Personal AI Assistant</p>
-    <span class="memory-badge">🧠 {memory_count} memories stored</span>
+    <h1>RUBY</h1>
+    <p>Deep Space AI Assistant</p>
+    <span class="memory-badge">🛸 {memory_count} light years of memory</span>
 </div>
 """, unsafe_allow_html=True)
 
 # ── Document upload ───────────────────────────────────────────
-st.subheader("📄 Document Reader (Optional)")
+st.subheader("🛰️ Mission Control (Optional)")
 uploaded_file = st.file_uploader(
     "Upload a PDF, TXT or Word document",
     type=["pdf", "txt", "docx"],
@@ -332,21 +416,21 @@ if uploaded_file is not None:
         pdf_reader = PyPDF2.PdfReader(io.BytesIO(uploaded_file.read()))
         for page in pdf_reader.pages:
             document_text += page.extract_text()
-        st.success("✓ PDF uploaded successfully")
+        st.success("✓ Document received at mission control")
     elif uploaded_file.type == "text/plain":
         document_text = uploaded_file.read().decode("utf-8")
-        st.success("✓ Text file uploaded successfully")
+        st.success("✓ Transmission received")
     elif uploaded_file.type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
         doc = Document(io.BytesIO(uploaded_file.read()))
         for paragraph in doc.paragraphs:
             document_text += paragraph.text + "\n"
-        st.success("✓ Word document uploaded successfully")
+        st.success("✓ Document received at mission control")
 
 st.divider()
 
 # ── Voice Input ───────────────────────────────────────────────
-st.subheader("🎙️ Voice Input (Optional)")
-st.caption("Click record and speak — it will send automatically")
+st.subheader("📡 Transmission (Optional)")
+st.caption("Click record and speak — your message will transmit automatically")
 
 st.components.v1.html("""
 <script>
@@ -357,7 +441,7 @@ const supported = ('SpeechRecognition' in window || 'webkitSpeechRecognition' in
 
 if (!supported) {
     document.getElementById('btn').style.display = 'none';
-    document.getElementById('status').innerText = '⚠️ Voice input is not available on iPhone/iPad. Please type your message using the chat box below.';
+    document.getElementById('status').innerText = '⚠️ Voice transmission not available on iPhone/iPad. Please type your message below.';
     document.getElementById('status').style.color = '#ffb3b3';
 }
 
@@ -370,8 +454,8 @@ function toggleRecording() {
 
         recognition.onresult = function(event) {
             const transcript = event.results[0][0].transcript;
-            document.getElementById('btn').innerText = '🎙️ Click to record';
-            document.getElementById('status').innerText = '✓ Heard: ' + transcript;
+            document.getElementById('btn').innerText = '📡 Begin Transmission';
+            document.getElementById('status').innerText = '✓ Transmission received: ' + transcript;
             isRecording = false;
 
             setTimeout(function() {
@@ -390,20 +474,20 @@ function toggleRecording() {
         };
 
         recognition.onerror = function(event) {
-            document.getElementById('status').innerText = '❌ Error: ' + event.error;
-            document.getElementById('btn').innerText = '🎙️ Click to record';
+            document.getElementById('status').innerText = '❌ Transmission failed: ' + event.error;
+            document.getElementById('btn').innerText = '📡 Begin Transmission';
             isRecording = false;
         };
 
         recognition.onend = function() {
             isRecording = false;
-            document.getElementById('btn').innerText = '🎙️ Click to record';
+            document.getElementById('btn').innerText = '📡 Begin Transmission';
         };
 
         recognition.start();
         isRecording = true;
-        document.getElementById('btn').innerText = '⏹️ Recording... click to stop';
-        document.getElementById('status').innerText = 'Listening...';
+        document.getElementById('btn').innerText = '⏹️ Transmitting... click to stop';
+        document.getElementById('status').innerText = 'Listening to transmission...';
     } else {
         recognition.stop();
     }
@@ -415,12 +499,13 @@ function toggleRecording() {
     border: none;
     border-radius: 50px;
     padding: 0.6rem 1.8rem;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     cursor: pointer;
     font-family: sans-serif;
     box-shadow: 0 4px 20px rgba(213, 0, 249, 0.4);
-    letter-spacing: 0.03em;
-">🎙️ Click to record</button>
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+">📡 Begin Transmission</button>
 <p id="status" style="color: #e0b0ff; font-size: 0.8rem; margin-top: 0.5rem; font-family: sans-serif;"></p>
 """, height=80)
 
@@ -434,7 +519,7 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-prompt = st.chat_input("Ask Ruby anything...")
+prompt = st.chat_input("Send transmission to Ruby...")
 
 if prompt:
     with st.chat_message("user"):
@@ -453,7 +538,7 @@ if prompt:
         full_prompt = prompt
 
     with st.chat_message("assistant"):
-        with st.spinner("Ruby is thinking..."):
+        with st.spinner("Ruby is scanning the cosmos..."):
             response = chat(full_prompt)
         st.markdown(response)
 
@@ -465,7 +550,7 @@ if prompt:
 # ── Export Chat ───────────────────────────────────────────────
 if st.session_state.get("messages"):
     st.divider()
-    st.subheader("💾 Export Conversation")
+    st.subheader("🌌 Export Transmission Log")
     col1, col2 = st.columns(2)
 
     with col1:
@@ -476,21 +561,20 @@ if st.session_state.get("messages"):
         st.download_button(
             label="📥 Export as TXT",
             data=chat_text,
-            file_name="ruby_chat.txt",
+            file_name="ruby_transmission.txt",
             mime="text/plain",
             use_container_width=True
         )
 
     with col2:
-        # Export as markdown
-        chat_md = "# Ruby Chat Export\n\n"
+        chat_md = "# Ruby Transmission Log\n\n"
         for msg in st.session_state.messages:
             role = "**You**" if msg["role"] == "user" else "**Ruby**"
             chat_md += f"{role}:\n{msg['content']}\n\n---\n\n"
         st.download_button(
             label="📥 Export as Markdown",
             data=chat_md,
-            file_name="ruby_chat.md",
+            file_name="ruby_transmission.md",
             mime="text/markdown",
             use_container_width=True
         )
