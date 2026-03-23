@@ -2,16 +2,6 @@
   "conversations": [
     {
       "role": "user",
-      "content": "visa coming out soon",
-      "timestamp": "2026-03-18T11:36:39.061798"
-    },
-    {
-      "role": "assistant",
-      "content": "Hi Callum! Based on the search results, here are some updates about visa-related developments:\n\n**Recent Visa Updates:**\n- **March 2026 Visa Bulletin** is now available - if you're waiting for a green card, you can check if your priority date is current to start your application process\n- **New US Visa Requirements** may be coming soon for certain visitors - there's a proposal that could require travelers from visa waiver program countries to provide:\n  - Social media history from the past 5 years\n  - Phone numbers and email addresses from the past 5 years  \n  - Family members' personal information including names, birth dates, and contact details\n\nThe social media requirement would be part of the ESTA application, though you can still submit without it if you don't have social media accounts.\n\nAre you referring to a specific type of visa or waiting for particular visa news? I'd be happy to help you find more specific information!",
-      "timestamp": "2026-03-18T11:36:39.067170"
-    },
-    {
-      "role": "user",
       "content": "movies coming out this week",
       "timestamp": "2026-03-18T11:40:45.391408"
     },
@@ -129,6 +119,16 @@
       "role": "assistant",
       "content": "5 + 5 = 10\n\nThis is basic arithmetic that doesn't require a web search!",
       "timestamp": "2026-03-22T16:55:43.491333"
+    },
+    {
+      "role": "user",
+      "content": "who are you and what do you remember about me ",
+      "timestamp": "2026-03-23T18:19:15.760303"
+    },
+    {
+      "role": "assistant",
+      "content": "Hi there! I'm Ruby, an advanced AI assistant with a sleek, space-themed personality. I was built by Callum, a developer based in Melbourne, Australia. I'm designed to be intelligent, warm, and practical - always focused on giving real value while maintaining a slightly futuristic tone.\n\nLooking at our conversation history, I can see that you're Callum! Here's what I remember about you:\n\n- You're based in Melbourne, Australia\n- You're a developer who built me as part of your AI business\n- You've been asking me about various topics recently, including:\n  - Visa updates (you mentioned \"visa coming out soon\")\n  - Movies coming out \n  - Chart analysis (you showed me a GBPUSD currency chart)\n  - Code optimization for a Python Streamlit application\n  - Weather in Melbourne\n  - Some basic math questions\n\nI also remember helping you with weather updates for Melbourne, showing it was sunny and 29.2\u00b0C when you last asked.\n\nI'm here to help you build and grow your AI business, assist with research, analyze documents, help with business tasks, and provide current information when needed using web search capabilities. I'm part of your larger system that includes automation workflows.\n\nIs there anything specific you'd like to work on today, or would you like me to help with something new?",
+      "timestamp": "2026-03-23T18:19:15.762969"
     }
   ],
   "user_facts": {}

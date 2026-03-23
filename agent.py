@@ -6,6 +6,7 @@ from langchain_classic.agents import create_tool_calling_agent, AgentExecutor
 from config import ANTHROPIC_API_KEY
 from search import search_web as _search_web
 from memory import add_conversation, get_memory_summary
+from flowise import get_flowise_memory
 
 @tool
 def search_web(query: str) -> str:
@@ -52,6 +53,8 @@ chat_history = []
 
 def chat(user_message, image_data=None, image_media_type=None):
     memory_summary = get_memory_summary()
+    flowise_context = get_flowise_memory(user_message)
+    memory_summary = memory_summary + flowise_context
 
     if image_data and image_media_type:
         multimodal_message = HumanMessage(content=[
