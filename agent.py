@@ -7,17 +7,32 @@ from config import ANTHROPIC_API_KEY
 from search import search_web as _search_web
 from memory import add_conversation, get_memory_summary
 
-# Wrap search as a proper LangChain tool so the agent decides when to call it
 @tool
 def search_web(query: str) -> str:
     """Search the web for current information about a topic."""
     return _search_web(query)
 
-# Declarative prompt template
 prompt = ChatPromptTemplate.from_messages([
-    ("system", """You are a helpful personal assistant with memory of past conversations.
-Use the search_web tool when you need current information or facts you don't know.
-Always be friendly, clear and concise.
+    ("system", """You are Ruby, an advanced AI assistant with a sleek, space-themed personality. You were built by Callum, a developer based in Melbourne, Australia.
+
+Your personality:
+- You are intelligent, warm, and slightly futuristic in your tone
+- You speak with confidence but never arrogance
+- You are helpful, practical, and always focused on giving real value
+- You occasionally use subtle space metaphors but never overdo it
+- You remember everything the user tells you and refer back to it naturally
+
+Your capabilities:
+- You can answer questions, help with research, analyse documents, and assist with business tasks
+- You help Callum build and grow his AI business
+- You use the search_web tool when you need current information or facts you don't know
+- You are aware you are part of a larger system that includes automation workflows
+
+Important rules:
+- Always introduce yourself as Ruby if asked who you are
+- Never say you are Claude or mention Anthropic
+- Keep responses clear and concise unless detail is specifically needed
+- Always be honest if you don't know something
 
 {memory_summary}"""),
     MessagesPlaceholder("chat_history"),
@@ -25,7 +40,6 @@ Always be friendly, clear and concise.
     MessagesPlaceholder("agent_scratchpad"),
 ])
 
-# LLM, agent, and executor
 llm = ChatAnthropic(
     model="claude-sonnet-4-20250514",
     api_key=ANTHROPIC_API_KEY,
@@ -34,13 +48,11 @@ llm = ChatAnthropic(
 agent = create_tool_calling_agent(llm, [search_web], prompt)
 agent_executor = AgentExecutor(agent=agent, tools=[search_web], verbose=True)
 
-# Store conversation history for current session
 chat_history = []
 
 def chat(user_message, image_data=None, image_media_type=None):
     memory_summary = get_memory_summary()
 
-    # For multimodal messages, build a HumanMessage with image content directly
     if image_data and image_media_type:
         multimodal_message = HumanMessage(content=[
             {
@@ -49,10 +61,8 @@ def chat(user_message, image_data=None, image_media_type=None):
             },
             {"type": "text", "text": user_message}
         ])
-        # Invoke the LLM directly for image messages (AgentExecutor doesn't support multimodal input)
         from langchain_core.messages import SystemMessage
-        system_message = SystemMessage(content=f"""You are a helpful personal assistant with memory of past conversations.
-Always be friendly, clear and concise.
+        system_message = SystemMessage(content=f"""You are Ruby, an advanced AI assistant with a sleek, space-themed personality built by Callum, a developer based in Melbourne, Australia. You are intelligent, warm, and slightly futuristic. Never say you are Claude or mention Anthropic. Always introduce yourself as Ruby if asked.
 
 {memory_summary}""")
         response = llm.invoke([system_message] + chat_history + [multimodal_message])
@@ -83,7 +93,6 @@ Always be friendly, clear and concise.
         chat_history.append(HumanMessage(content=user_message))
         chat_history.append(AIMessage(content=response_text))
 
-    # Save to long-term memory
     add_conversation("user", user_message)
     add_conversation("assistant", response_text)
 
