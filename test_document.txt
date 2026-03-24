@@ -1,0 +1,20 @@
+Company: Ruby AI
+Owner: Callum Crabtree
+Location: Melbourne, Australia
+
+Services:
+Ruby AI builds custom AI infrastructure and automation systems for businesses.
+We specialise in AI assistants, customer support bots, lead generation systems,
+and document intelligence tools.
+
+Pricing:
+One-time build fees range from $1,500 to $5,000 depending on complexity.
+Monthly retainer packages start at $200 per month.
+
+Technology:
+We use Python, LangChain, Streamlit, Claude AI, n8n, and Flowise.
+All systems are cloud deployed and production ready.
+
+Contact:
+Available for Australian and international clients.
+Based in Melbourne, Australia.
